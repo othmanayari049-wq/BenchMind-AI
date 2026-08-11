@@ -1,8 +1,8 @@
 from .config import Settings
-from .providers import MockProvider, ProviderUnavailable
+from .providers import MockProvider, ModelProvider, ProviderUnavailable
 
 
-def build_provider(settings: Settings):
+def build_provider(settings: Settings) -> ModelProvider:
     if settings.model_provider.lower() == "openai":
         try:
             from .providers.openai import OpenAIProvider
