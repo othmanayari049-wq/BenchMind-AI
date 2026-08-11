@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -120,8 +119,7 @@ async def get_case(case_id: str) -> EngineeringCase:
 
 @app.post("/api/v1/demo/{demo_name}", response_model=EngineeringReport)
 async def run_demo(demo_name: str) -> EngineeringReport:
-    root = Path(__file__).resolve().parents[2]
-    demo_dir = root / "examples" / demo_name
+    demo_dir = settings.demo_dir / demo_name
     if not demo_dir.is_dir():
         raise HTTPException(status_code=404, detail="Demo not found")
 
