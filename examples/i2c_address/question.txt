@@ -1,0 +1,1 @@
+My BME280 does not initialize although the I2C scanner detects a device. Diagnose the mismatch.

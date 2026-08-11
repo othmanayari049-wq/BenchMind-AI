@@ -1,0 +1,10 @@
+{
+  "id": "missing_ground",
+  "question": "UART communication does not work.",
+  "files": ["../../../examples/missing_ground/wiring.txt"],
+  "known_fault": "The controller and peripheral do not share a common ground.",
+  "expected_root_cause_contains": "Missing common ground",
+  "acceptable_alternatives": [],
+  "expected_evidence": ["wiring.txt"],
+  "expected_test_contains": "Verify common ground"
+}

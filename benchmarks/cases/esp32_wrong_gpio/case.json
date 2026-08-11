@@ -1,0 +1,10 @@
+{
+  "id": "esp32_wrong_gpio",
+  "question": "My HC-SR04 always reads 0 cm. Check the firmware and wiring notes.",
+  "files": ["../../../examples/esp32_wrong_gpio/firmware.ino", "../../../examples/esp32_wrong_gpio/wiring.txt"],
+  "known_fault": "ECHO is physically wired to GPIO5 while firmware expects GPIO18.",
+  "expected_root_cause_contains": "ECHO pin-definition mismatch",
+  "acceptable_alternatives": [],
+  "expected_evidence": ["firmware.ino", "wiring.txt"],
+  "expected_test_contains": "Verify pin continuity"
+}

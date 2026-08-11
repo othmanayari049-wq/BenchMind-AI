@@ -1,0 +1,5 @@
+Bench wiring notes:
+TRIG -> GPIO17
+ECHO -> GPIO5
+VCC -> 5V
+GND is connected to the ESP32 ground.

@@ -1,0 +1,1 @@
+The UART peripheral powers on but communication never works. What should I verify first?

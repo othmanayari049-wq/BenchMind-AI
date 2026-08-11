@@ -1,0 +1,10 @@
+{
+  "id": "i2c_address",
+  "question": "The BME280 is detected by the I2C scanner but initialization fails.",
+  "files": ["../../../examples/i2c_address/firmware.cpp", "../../../examples/i2c_address/i2c.log"],
+  "known_fault": "Firmware uses 0x77 while the device is detected at 0x76.",
+  "expected_root_cause_contains": "I2C address mismatch",
+  "acceptable_alternatives": [],
+  "expected_evidence": ["firmware.cpp", "i2c.log"],
+  "expected_test_contains": "Confirm the device address"
+}

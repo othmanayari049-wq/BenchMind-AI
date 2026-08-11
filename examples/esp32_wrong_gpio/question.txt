@@ -1,0 +1,1 @@
+My HC-SR04 always reads 0 cm. Check the firmware and wiring notes and tell me the most likely cause.

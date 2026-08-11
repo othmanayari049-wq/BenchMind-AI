@@ -1,0 +1,10 @@
+{
+  "id": "baud_mismatch",
+  "question": "The serial monitor output is unreadable.",
+  "files": ["../../../examples/baud_mismatch/firmware.ino", "../../../examples/baud_mismatch/monitor.cfg"],
+  "known_fault": "Firmware uses 115200 baud while the monitor is configured for 9600.",
+  "expected_root_cause_contains": "Serial baud-rate mismatch",
+  "acceptable_alternatives": [],
+  "expected_evidence": ["firmware.ino", "monitor.cfg"],
+  "expected_test_contains": "Align serial baud rates"
+}

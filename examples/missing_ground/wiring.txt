@@ -1,0 +1,3 @@
+TX -> GPIO16
+RX -> GPIO17
+GND not connected between the controller and peripheral.
