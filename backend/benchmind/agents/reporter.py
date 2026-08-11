@@ -29,11 +29,20 @@ class ReportAgent:
                 refs[(item.evidence_id, item.page, item.section)] = item
 
         if diagnosis.primary is None:
-            summary = "BenchMind could not support a root cause from the available evidence. More evidence is required."
+            summary = (
+                "BenchMind could not support a root cause from the available evidence. "
+                "More evidence is required."
+            )
         else:
-            adjusted = max(0.0, min(1.0, diagnosis.primary.confidence + verification.confidence_adjustment))
+            adjusted = max(
+                0.0,
+                min(1.0, diagnosis.primary.confidence + verification.confidence_adjustment),
+            )
             status = "supported" if verification.accepted else "not yet verified"
-            summary = f"Primary hypothesis: {diagnosis.primary.title} ({status}, adjusted confidence {adjusted:.0%})."
+            summary = (
+                f"Primary hypothesis: {diagnosis.primary.title} ({status}, "
+                f"adjusted confidence {adjusted:.0%})."
+            )
 
         unresolved = list(diagnosis.primary.unresolved_uncertainty) if diagnosis.primary else []
         unresolved.extend(verification.missing_evidence)

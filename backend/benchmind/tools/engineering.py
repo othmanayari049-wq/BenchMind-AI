@@ -17,7 +17,9 @@ def voltage_divider(vin: float, r_top: float, r_bottom: float) -> float:
     return vin * r_bottom / (r_top + r_bottom)
 
 
-def ohms_law(*, voltage: float | None = None, current: float | None = None, resistance: float | None = None) -> float:
+def ohms_law(
+    *, voltage: float | None = None, current: float | None = None, resistance: float | None = None
+) -> float:
     supplied = sum(value is not None for value in (voltage, current, resistance))
     if supplied != 2:
         raise ValueError("Provide exactly two of voltage, current, resistance")
@@ -34,7 +36,9 @@ def ohms_law(*, voltage: float | None = None, current: float | None = None, resi
     return voltage / current
 
 
-def electrical_power(*, voltage: float | None = None, current: float | None = None, resistance: float | None = None) -> float:
+def electrical_power(
+    *, voltage: float | None = None, current: float | None = None, resistance: float | None = None
+) -> float:
     if voltage is not None and current is not None:
         return voltage * current
     if voltage is not None and resistance is not None:
@@ -50,9 +54,14 @@ def electrical_power(*, voltage: float | None = None, current: float | None = No
 
 PIN_PATTERNS = [
     re.compile(r"#define\s+([A-Za-z_][A-Za-z0-9_]*)\s+(?:GPIO)?(\d+)", re.I),
-    re.compile(r"(?:const\s+)?(?:int|uint8_t|byte)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:GPIO)?(\d+)\s*;", re.I),
+    re.compile(
+        r"(?:const\s+)?(?:int|uint8_t|byte)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:GPIO)?(\d+)\s*;",
+        re.I,
+    ),
 ]
-WIRING_PATTERN = re.compile(r"\b([A-Za-z][A-Za-z0-9_ -]{0,30})\s*(?:->|=>|:)\s*GPIO\s*(\d+)\b", re.I)
+WIRING_PATTERN = re.compile(
+    r"\b([A-Za-z][A-Za-z0-9_ -]{0,30})\s*(?:->|=>|:)\s*GPIO\s*(\d+)\b", re.I
+)
 
 
 def parse_code_pins(text: str, source: str) -> list[ParsedPin]:
@@ -65,7 +74,10 @@ def parse_code_pins(text: str, source: str) -> list[ParsedPin]:
 
 def parse_wiring_pins(text: str, source: str) -> list[ParsedPin]:
     return _dedupe_pins(
-        [ParsedPin(signal=normalize_signal(signal), pin=pin, source=source) for signal, pin in WIRING_PATTERN.findall(text)]
+        [
+            ParsedPin(signal=normalize_signal(signal), pin=pin, source=source)
+            for signal, pin in WIRING_PATTERN.findall(text)
+        ]
     )
 
 
@@ -94,7 +106,10 @@ def parse_i2c_addresses(text: str) -> list[str]:
 
 def parse_serial_baud(text: str) -> list[int]:
     values = [int(v) for v in re.findall(r"Serial\.begin\s*\(\s*(\d+)\s*\)", text)]
-    values += [int(v) for v in re.findall(r"(?:monitor[_ -]?baud|baud(?:rate)?)\s*[:=]\s*(\d+)", text, re.I)]
+    values += [
+        int(v)
+        for v in re.findall(r"(?:monitor[_ -]?baud|baud(?:rate)?)\s*[:=]\s*(\d+)", text, re.I)
+    ]
     return sorted(set(values))
 
 
@@ -102,7 +117,12 @@ def likely_error_lines(text: str, limit: int = 8) -> list[str]:
     lines = []
     for line in text.splitlines():
         lower = line.lower()
-        if "error:" in lower or "fatal error" in lower or "exception" in lower or "traceback" in lower:
+        if (
+            "error:" in lower
+            or "fatal error" in lower
+            or "exception" in lower
+            or "traceback" in lower
+        ):
             lines.append(line.strip())
         if len(lines) >= limit:
             break

@@ -26,9 +26,10 @@ class OpenAIProvider(ModelProvider):
         media_type = evidence.media_type or "image/jpeg"
         data_url = f"data:{media_type};base64,{base64.b64encode(raw).decode('ascii')}"
         prompt = (
-            "Inspect this engineering hardware/schematic image. Report only visible observations; "
-            "do not invent hidden connections or component values. Return a JSON array of objects with "
-            "keys statement, confidence (0..1), and tags. If uncertain, lower confidence or return []. "
+            "Inspect this engineering hardware/schematic image. Report only visible "
+            "observations; do not invent hidden connections or component values. Return a "
+            "JSON array with statement, confidence (0..1), and tags. If uncertain, lower "
+            "confidence or return []. "
             f"User question: {question}"
         )
         try:

@@ -12,18 +12,22 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def load_case(name: str) -> EngineeringCase:
     directory = ROOT / "examples" / name
-    case = EngineeringCase(question=(directory / "question.txt").read_text(encoding="utf-8").strip())
+    case = EngineeringCase(
+        question=(directory / "question.txt").read_text(encoding="utf-8").strip()
+    )
     for path in directory.iterdir():
         if path.name == "question.txt":
             continue
         data = path.read_bytes()
-        case.evidence.append(Evidence(
-            filename=path.name,
-            kind=classify_file(path.name),
-            size_bytes=len(data),
-            text=data.decode("utf-8"),
-            stored_path=str(path),
-        ))
+        case.evidence.append(
+            Evidence(
+                filename=path.name,
+                kind=classify_file(path.name),
+                size_bytes=len(data),
+                text=data.decode("utf-8"),
+                stored_path=str(path),
+            )
+        )
     return case
 
 

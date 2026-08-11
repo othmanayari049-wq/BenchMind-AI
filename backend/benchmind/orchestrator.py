@@ -37,10 +37,14 @@ class BenchMindOrchestrator:
         trace: list[AgentTrace] = []
         started = perf_counter()
         plan = self.supervisor.route(case)
-        trace.append(AgentTrace(
-            agent="supervisor", status="completed", duration_ms=(perf_counter() - started) * 1000,
-            note="; ".join(f"{agent}: {plan.reasons[agent]}" for agent in plan.agents),
-        ))
+        trace.append(
+            AgentTrace(
+                agent="supervisor",
+                status="completed",
+                duration_ms=(perf_counter() - started) * 1000,
+                note="; ".join(f"{agent}: {plan.reasons[agent]}" for agent in plan.agents),
+            )
+        )
 
         semaphore = asyncio.Semaphore(self.max_parallel_agents)
 
@@ -50,9 +54,19 @@ class BenchMindOrchestrator:
             try:
                 async with semaphore:
                     findings = await agent.run(case)
-                return findings, AgentTrace(agent=name, status="completed", duration_ms=(perf_counter() - t0) * 1000, note=f"{len(findings)} finding(s)")
+                return findings, AgentTrace(
+                    agent=name,
+                    status="completed",
+                    duration_ms=(perf_counter() - t0) * 1000,
+                    note=f"{len(findings)} finding(s)",
+                )
             except Exception as exc:
-                return [], AgentTrace(agent=name, status="failed", duration_ms=(perf_counter() - t0) * 1000, note=str(exc))
+                return [], AgentTrace(
+                    agent=name,
+                    status="failed",
+                    duration_ms=(perf_counter() - t0) * 1000,
+                    note=str(exc),
+                )
 
         results = await asyncio.gather(*(run_agent(name) for name in plan.agents))
         findings: list[AgentFinding] = []
@@ -62,14 +76,26 @@ class BenchMindOrchestrator:
 
         t0 = perf_counter()
         diagnosis = self.diagnosis.synthesize(case, findings)
-        trace.append(AgentTrace(agent="diagnosis", status="completed", duration_ms=(perf_counter() - t0) * 1000))
+        trace.append(
+            AgentTrace(
+                agent="diagnosis", status="completed", duration_ms=(perf_counter() - t0) * 1000
+            )
+        )
 
         t0 = perf_counter()
         verification = self.verifier.verify(diagnosis)
-        trace.append(AgentTrace(agent="verifier", status="completed", duration_ms=(perf_counter() - t0) * 1000))
+        trace.append(
+            AgentTrace(
+                agent="verifier", status="completed", duration_ms=(perf_counter() - t0) * 1000
+            )
+        )
 
         t0 = perf_counter()
         report = self.reporter.build(case, findings, diagnosis, verification, trace)
-        trace.append(AgentTrace(agent="reporter", status="completed", duration_ms=(perf_counter() - t0) * 1000))
+        trace.append(
+            AgentTrace(
+                agent="reporter", status="completed", duration_ms=(perf_counter() - t0) * 1000
+            )
+        )
         report.agent_trace = trace
         return report

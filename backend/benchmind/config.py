@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
     openai_model: str = "gpt-5.6-luna"
     data_dir: Path = Path(".benchmind")
+    demo_dir: Path = Path("examples")
     max_upload_bytes: int = 10 * 1024 * 1024
     max_files_per_case: int = 12
     cors_origins: str = "http://localhost:3000"

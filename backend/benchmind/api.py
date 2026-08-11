@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
+from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -57,24 +57,46 @@ async def capabilities() -> dict[str, object]:
     return {
         "v1": {
             "inputs": ["text", "images", "PDF", "code", "logs", "CSV telemetry", "config"],
-            "agents": ["supervisor", "hardware_vision", "firmware", "datasheet", "telemetry", "engineering_tools", "diagnosis", "verifier", "reporter"],
+            "agents": [
+                "supervisor",
+                "hardware_vision",
+                "firmware",
+                "datasheet",
+                "telemetry",
+                "engineering_tools",
+                "diagnosis",
+                "verifier",
+                "reporter",
+            ],
             "model_provider": provider.name,
             "deterministic_tools": True,
             "rag": "local provenance-aware lexical retrieval",
             "sandbox_execution": False,
         },
-        "planned": ["isolated code execution", "serial integration", "compiler adapters", "ROS", "live telemetry", "voice", "STM32/Raspberry Pi", "HDL tooling"],
+        "planned": [
+            "isolated code execution",
+            "serial integration",
+            "compiler adapters",
+            "ROS",
+            "live telemetry",
+            "voice",
+            "STM32/Raspberry Pi",
+            "HDL tooling",
+        ],
     }
 
 
 @app.post("/api/v1/analyze", response_model=EngineeringReport)
 async def analyze(
-    question: str = Form(..., min_length=3, max_length=4000),
-    files: list[UploadFile] | None = File(default=None),
+    question: Annotated[str, Form(min_length=3, max_length=4000)],
+    files: Annotated[list[UploadFile] | None, File()] = None,
 ) -> EngineeringReport:
     uploads = files or []
     if len(uploads) > settings.max_files_per_case:
-        raise HTTPException(status_code=413, detail=f"At most {settings.max_files_per_case} files are allowed per case")
+        raise HTTPException(
+            status_code=413,
+            detail=f"At most {settings.max_files_per_case} files are allowed per case",
+        )
 
     case = EngineeringCase(question=question)
     case_dir = settings.data_dir / "uploads" / case.id
@@ -97,8 +119,7 @@ async def get_case(case_id: str) -> EngineeringCase:
 
 @app.post("/api/v1/demo/{demo_name}", response_model=EngineeringReport)
 async def run_demo(demo_name: str) -> EngineeringReport:
-    root = Path(__file__).resolve().parents[2]
-    demo_dir = root / "examples" / demo_name
+    demo_dir = settings.demo_dir / demo_name
     if not demo_dir.is_dir():
         raise HTTPException(status_code=404, detail="Demo not found")
 
@@ -117,13 +138,15 @@ async def run_demo(demo_name: str) -> EngineeringReport:
             text = data.decode("utf-8")
         except UnicodeDecodeError:
             text = None
-        case.evidence.append(Evidence(
-            filename=path.name,
-            kind=classify_file(path.name),
-            size_bytes=len(data),
-            text=text,
-            stored_path=str(path),
-        ))
+        case.evidence.append(
+            Evidence(
+                filename=path.name,
+                kind=classify_file(path.name),
+                size_bytes=len(data),
+                text=text,
+                stored_path=str(path),
+            )
+        )
     report = await orchestrator.analyze(case)
     case.report = report
     store.put(case)
