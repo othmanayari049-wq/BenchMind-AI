@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mcp.server import MCPServer
+
 from .tools.engineering import (
     electrical_power,
     ohms_law,
@@ -9,15 +14,15 @@ from .tools.engineering import (
 )
 
 
-def build_server():
+def build_server() -> MCPServer:
     try:
-        from mcp.server.fastmcp import FastMCP
+        from mcp.server import MCPServer
     except ImportError as exc:
         raise RuntimeError(
             "Install BenchMind with the 'mcp' extra: pip install -e '.[mcp]'"
         ) from exc
 
-    mcp = FastMCP("BenchMind Engineering Tools")
+    mcp = MCPServer("BenchMind Engineering Tools")
 
     @mcp.tool()
     def calculate_voltage_divider(vin: float, r_top: float, r_bottom: float) -> float:
