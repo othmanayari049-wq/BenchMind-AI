@@ -121,11 +121,7 @@ class DatasheetAgent(SpecialistAgent):
 
     async def run(self, case: EngineeringCase) -> list[AgentFinding]:
         retriever = EngineeringRetriever(
-            [
-                item
-                for item in case.evidence
-                if item.kind in {EvidenceKind.PDF, EvidenceKind.TEXT}
-            ]
+            [item for item in case.evidence if item.kind in {EvidenceKind.PDF, EvidenceKind.TEXT}]
         )
         refs = retriever.search(case.question, limit=4)
         return [
