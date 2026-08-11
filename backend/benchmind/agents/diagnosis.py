@@ -41,10 +41,18 @@ class DiagnosisAgent:
                     procedure=[
                         "Provide a clear wiring/schematic view or explicit pin map.",
                         "Provide firmware/configuration and the relevant runtime/build log.",
-                        "Include the component datasheet when electrical limits or pin functions are uncertain.",
+                        (
+                            "Include the component datasheet when electrical limits or pin "
+                            "functions are uncertain."
+                        ),
                     ],
-                    expected_observation="Enough independent evidence to compare intended and observed behavior.",
-                    interpretation="BenchMind does not force a root cause when the available evidence is insufficient.",
+                    expected_observation=(
+                        "Enough independent evidence to compare intended and observed behavior."
+                    ),
+                    interpretation=(
+                        "BenchMind does not force a root cause when the available evidence "
+                        "is insufficient."
+                    ),
                 )
             ],
         )
@@ -61,7 +69,9 @@ class DiagnosisAgent:
             ]
             gpio_tags = [tag for tag in finding.tags if tag.startswith("GPIO")]
             if signal_tags and gpio_tags and finding.evidence:
-                mappings[signal_tags[0]].append((gpio_tags[0], finding.evidence[0], finding.agent))
+                mappings[signal_tags[0]].append(
+                    (gpio_tags[0], finding.evidence[0], finding.agent)
+                )
         for signal, values in mappings.items():
             unique = {gpio for gpio, _, _ in values}
             if len(unique) < 2:
@@ -71,11 +81,13 @@ class DiagnosisAgent:
             return Diagnosis(
                 primary=Hypothesis(
                     title=f"{signal} pin-definition mismatch",
-                    root_cause=f"The available evidence disagrees on the GPIO used for {signal}: {detail}.",
+                    root_cause=(
+                        f"The evidence disagrees on the GPIO used for {signal}: {detail}."
+                    ),
                     confidence=0.94,
                     supporting_evidence=refs,
                     unresolved_uncertainty=[
-                        "A clear powered-off continuity/wiring check is still required."
+                        "A powered-off continuity/wiring check is still required."
                     ],
                 ),
                 tests=[
@@ -85,15 +97,26 @@ class DiagnosisAgent:
                             "Power the circuit off.",
                             f"Trace the {signal} wire from the peripheral to the MCU pin.",
                             "Compare that physical GPIO with the firmware pin definition.",
-                            "Correct one side so the physical and firmware mappings agree, then retest.",
+                            (
+                                "Correct one side so the physical and firmware mappings agree, "
+                                "then retest."
+                            ),
                         ],
-                        expected_observation="The physical GPIO and firmware GPIO should match exactly.",
-                        interpretation="If they differ, the mismatch is confirmed; if they already match, investigate an alternative hypothesis.",
+                        expected_observation=(
+                            "The physical GPIO and firmware GPIO should match exactly."
+                        ),
+                        interpretation=(
+                            "If they differ, the mismatch is confirmed. If they match, "
+                            "investigate an alternative hypothesis."
+                        ),
                         safety_notes=["Do not move wiring on an energized circuit."],
                     )
                 ],
                 proposed_fix=[
-                    f"Align the {signal} firmware definition and physical wiring to the same verified GPIO."
+                    (
+                        f"Align the {signal} firmware definition and physical wiring to the "
+                        "same verified GPIO."
+                    )
                 ],
                 safety_considerations=["Disconnect power before rewiring."],
             )
@@ -112,7 +135,9 @@ class DiagnosisAgent:
                     if "scan" in item.text.lower() or "found" in item.text.lower()
                     else code_values
                 )
-                target.append((value, EvidenceReference(evidence_id=item.id, label=item.filename)))
+                target.append(
+                    (value, EvidenceReference(evidence_id=item.id, label=item.filename))
+                )
         code_set = {v for v, _ in code_values}
         observed_set = {v for v, _ in observed_values}
         if code_set and observed_set and code_set.isdisjoint(observed_set):
@@ -120,7 +145,10 @@ class DiagnosisAgent:
             return Diagnosis(
                 primary=Hypothesis(
                     title="I2C address mismatch",
-                    root_cause=f"Firmware/document evidence uses {sorted(code_set)}, while the bus scan observes {sorted(observed_set)}.",
+                    root_cause=(
+                        f"Firmware/document evidence uses {sorted(code_set)}, while the bus "
+                        f"scan observes {sorted(observed_set)}."
+                    ),
                     confidence=0.96,
                     supporting_evidence=refs,
                 ),
@@ -129,14 +157,25 @@ class DiagnosisAgent:
                         name="Confirm the device address",
                         procedure=[
                             "Run an I2C scanner on the target bus.",
-                            "Compare the detected address with the address configured in firmware.",
+                            (
+                                "Compare the detected address with the address configured "
+                                "in firmware."
+                            ),
                         ],
-                        expected_observation=f"The configured address should be one of {sorted(observed_set)}.",
-                        interpretation="A different configured address prevents communication with the detected device.",
+                        expected_observation=(
+                            f"The configured address should be one of {sorted(observed_set)}."
+                        ),
+                        interpretation=(
+                            "A different configured address prevents communication with the "
+                            "detected device."
+                        ),
                     )
                 ],
                 proposed_fix=[
-                    f"Configure the driver with the verified bus address: one of {sorted(observed_set)}."
+                    (
+                        "Configure the driver with a verified bus address: "
+                        f"one of {sorted(observed_set)}."
+                    )
                 ],
             )
         return Diagnosis()
@@ -160,7 +199,10 @@ class DiagnosisAgent:
             return Diagnosis(
                 primary=Hypothesis(
                     title="Serial baud-rate mismatch",
-                    root_cause=f"Firmware uses {sorted(code_baud)} baud while monitor/config evidence uses {sorted(other_baud)}.",
+                    root_cause=(
+                        f"Firmware uses {sorted(code_baud)} baud while monitor/config "
+                        f"evidence uses {sorted(other_baud)}."
+                    ),
                     confidence=0.98,
                     supporting_evidence=refs,
                 ),
@@ -172,7 +214,9 @@ class DiagnosisAgent:
                             "Set the serial monitor to exactly the same baud rate.",
                             "Reset the board and inspect the output.",
                         ],
-                        expected_observation="Readable stable serial output after both ends use the same baud rate.",
+                        expected_observation=(
+                            "Readable serial output after both ends use the same baud rate."
+                        ),
                         interpretation="Readable output confirms the mismatch was causal.",
                     )
                 ],
@@ -194,7 +238,10 @@ class DiagnosisAgent:
                 return Diagnosis(
                     primary=Hypothesis(
                         title="Missing common ground",
-                        root_cause="The supplied evidence explicitly indicates that the devices do not share a common ground reference.",
+                        root_cause=(
+                            "The evidence explicitly indicates that the devices do not share "
+                            "a common ground reference."
+                        ),
                         confidence=0.97,
                         supporting_evidence=[evidence],
                     ),
@@ -203,19 +250,33 @@ class DiagnosisAgent:
                             name="Verify common ground",
                             procedure=[
                                 "Power the system off.",
-                                "Verify the controller and peripheral ground pins are electrically connected.",
+                                (
+                                    "Verify that controller and peripheral ground pins are "
+                                    "electrically connected."
+                                ),
                                 "Restore power only after confirming the wiring.",
                             ],
-                            expected_observation="A continuous common ground connection between interacting devices.",
-                            interpretation="A missing reference can prevent valid logic-level communication.",
+                            expected_observation=(
+                                "A continuous common ground connection between interacting "
+                                "devices."
+                            ),
+                            interpretation=(
+                                "A missing reference can prevent valid logic-level communication."
+                            ),
                             safety_notes=["Power off before continuity testing or rewiring."],
                         )
                     ],
                     proposed_fix=[
-                        "Connect the communicating devices to a verified common ground, if electrically appropriate for the system."
+                        (
+                            "Connect communicating devices to a verified common ground when "
+                            "the system design permits it."
+                        )
                     ],
                     safety_considerations=[
-                        "Do not bridge isolated grounds unless the system design explicitly permits it."
+                        (
+                            "Do not bridge isolated grounds unless the system design "
+                            "explicitly permits it."
+                        )
                     ],
                 )
         return Diagnosis()
@@ -232,7 +293,10 @@ class DiagnosisAgent:
                 confidence=0.9,
                 supporting_evidence=first.evidence,
                 unresolved_uncertainty=[
-                    "The exact corrective change depends on the full error context and surrounding source."
+                    (
+                        "The exact fix depends on the full error context and surrounding "
+                        "source."
+                    )
                 ],
             ),
             tests=[
@@ -243,8 +307,13 @@ class DiagnosisAgent:
                         "Fix the earliest actionable error first.",
                         "Rebuild before addressing cascaded errors.",
                     ],
-                    expected_observation="The first compiler error should disappear after its root cause is corrected.",
-                    interpretation="Later compiler messages may be secondary effects of the first failure.",
+                    expected_observation=(
+                        "The first compiler error should disappear after its root cause "
+                        "is corrected."
+                    ),
+                    interpretation=(
+                        "Later compiler messages may be secondary effects of the first failure."
+                    ),
                 )
             ],
         )
