@@ -69,9 +69,7 @@ class DiagnosisAgent:
             ]
             gpio_tags = [tag for tag in finding.tags if tag.startswith("GPIO")]
             if signal_tags and gpio_tags and finding.evidence:
-                mappings[signal_tags[0]].append(
-                    (gpio_tags[0], finding.evidence[0], finding.agent)
-                )
+                mappings[signal_tags[0]].append((gpio_tags[0], finding.evidence[0], finding.agent))
         for signal, values in mappings.items():
             unique = {gpio for gpio, _, _ in values}
             if len(unique) < 2:
@@ -81,9 +79,7 @@ class DiagnosisAgent:
             return Diagnosis(
                 primary=Hypothesis(
                     title=f"{signal} pin-definition mismatch",
-                    root_cause=(
-                        f"The evidence disagrees on the GPIO used for {signal}: {detail}."
-                    ),
+                    root_cause=(f"The evidence disagrees on the GPIO used for {signal}: {detail}."),
                     confidence=0.94,
                     supporting_evidence=refs,
                     unresolved_uncertainty=[
@@ -135,9 +131,7 @@ class DiagnosisAgent:
                     if "scan" in item.text.lower() or "found" in item.text.lower()
                     else code_values
                 )
-                target.append(
-                    (value, EvidenceReference(evidence_id=item.id, label=item.filename))
-                )
+                target.append((value, EvidenceReference(evidence_id=item.id, label=item.filename)))
         code_set = {v for v, _ in code_values}
         observed_set = {v for v, _ in observed_values}
         if code_set and observed_set and code_set.isdisjoint(observed_set):
@@ -257,8 +251,7 @@ class DiagnosisAgent:
                                 "Restore power only after confirming the wiring.",
                             ],
                             expected_observation=(
-                                "A continuous common ground connection between interacting "
-                                "devices."
+                                "A continuous common ground connection between interacting devices."
                             ),
                             interpretation=(
                                 "A missing reference can prevent valid logic-level communication."
@@ -293,10 +286,7 @@ class DiagnosisAgent:
                 confidence=0.9,
                 supporting_evidence=first.evidence,
                 unresolved_uncertainty=[
-                    (
-                        "The exact fix depends on the full error context and surrounding "
-                        "source."
-                    )
+                    ("The exact fix depends on the full error context and surrounding source.")
                 ],
             ),
             tests=[
