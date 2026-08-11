@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ..models import AgentFinding, ClaimType, EngineeringCase, EvidenceKind, EvidenceReference
+from ..models import (
+    AgentFinding,
+    ClaimType,
+    EngineeringCase,
+    Evidence,
+    EvidenceKind,
+    EvidenceReference,
+)
 from ..providers.base import ModelProvider, ProviderUnavailable
 from ..rag import EngineeringRetriever
 from ..tools.engineering import (
@@ -15,7 +22,7 @@ from ..tools.engineering import (
 from .base import SpecialistAgent
 
 
-def ref(item, excerpt: str | None = None) -> EvidenceReference:
+def ref(item: Evidence, excerpt: str | None = None) -> EvidenceReference:
     return EvidenceReference(evidence_id=item.id, label=item.filename, excerpt=excerpt)
 
 
@@ -114,7 +121,11 @@ class DatasheetAgent(SpecialistAgent):
 
     async def run(self, case: EngineeringCase) -> list[AgentFinding]:
         retriever = EngineeringRetriever(
-            [item for item in case.evidence if item.kind in {EvidenceKind.PDF, EvidenceKind.TEXT}]
+            [
+                item
+                for item in case.evidence
+                if item.kind in {EvidenceKind.PDF, EvidenceKind.TEXT}
+            ]
         )
         refs = retriever.search(case.question, limit=4)
         return [
