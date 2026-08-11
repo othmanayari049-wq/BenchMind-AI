@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 from benchmind.api import app
 
-
 client = TestClient(app)
 
 

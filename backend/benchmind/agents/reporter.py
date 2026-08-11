@@ -31,7 +31,9 @@ class ReportAgent:
         if diagnosis.primary is None:
             summary = "BenchMind could not support a root cause from the available evidence. More evidence is required."
         else:
-            adjusted = max(0.0, min(1.0, diagnosis.primary.confidence + verification.confidence_adjustment))
+            adjusted = max(
+                0.0, min(1.0, diagnosis.primary.confidence + verification.confidence_adjustment)
+            )
             status = "supported" if verification.accepted else "not yet verified"
             summary = f"Primary hypothesis: {diagnosis.primary.title} ({status}, adjusted confidence {adjusted:.0%})."
 

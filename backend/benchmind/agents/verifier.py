@@ -9,7 +9,9 @@ class VerifierAgent:
             return VerificationResult(
                 accepted=False,
                 challenges=["No root-cause hypothesis was produced."],
-                missing_evidence=["Additional independent evidence is required before a diagnosis can be supported."],
+                missing_evidence=[
+                    "Additional independent evidence is required before a diagnosis can be supported."
+                ],
             )
 
         evidence_count = len(diagnosis.primary.supporting_evidence)
@@ -19,8 +21,12 @@ class VerifierAgent:
         accepted = True
 
         if evidence_count < 2:
-            challenges.append("Primary diagnosis currently relies on fewer than two independent evidence references.")
-            missing.append("Obtain a second independent observation before treating the diagnosis as confirmed.")
+            challenges.append(
+                "Primary diagnosis currently relies on fewer than two independent evidence references."
+            )
+            missing.append(
+                "Obtain a second independent observation before treating the diagnosis as confirmed."
+            )
             adjustment -= 0.12
         if diagnosis.primary.unresolved_uncertainty:
             challenges.extend(diagnosis.primary.unresolved_uncertainty)

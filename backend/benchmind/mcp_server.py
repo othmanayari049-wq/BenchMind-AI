@@ -1,13 +1,21 @@
 from __future__ import annotations
 
-from .tools.engineering import electrical_power, ohms_law, parse_i2c_addresses, parse_serial_baud, voltage_divider
+from .tools.engineering import (
+    electrical_power,
+    ohms_law,
+    parse_i2c_addresses,
+    parse_serial_baud,
+    voltage_divider,
+)
 
 
 def build_server():
     try:
         from mcp.server.fastmcp import FastMCP
     except ImportError as exc:
-        raise RuntimeError("Install BenchMind with the 'mcp' extra: pip install -e '.[mcp]'") from exc
+        raise RuntimeError(
+            "Install BenchMind with the 'mcp' extra: pip install -e '.[mcp]'"
+        ) from exc
 
     mcp = FastMCP("BenchMind Engineering Tools")
 

@@ -81,7 +81,9 @@ async def save_upload(upload: UploadFile, case_dir: Path, settings: Settings) ->
 
     data = await upload.read(settings.max_upload_bytes + 1)
     if len(data) > settings.max_upload_bytes:
-        raise HTTPException(status_code=413, detail=f"File exceeds {settings.max_upload_bytes} byte limit")
+        raise HTTPException(
+            status_code=413, detail=f"File exceeds {settings.max_upload_bytes} byte limit"
+        )
 
     case_dir.mkdir(parents=True, exist_ok=True)
     path = case_dir / filename

@@ -6,9 +6,9 @@ import json
 from pathlib import Path
 
 from .config import get_settings
+from .evidence import classify_file
 from .factory import build_provider
 from .models import EngineeringCase, Evidence
-from .evidence import classify_file
 from .orchestrator import BenchMindOrchestrator
 
 
@@ -23,13 +23,15 @@ async def _run(question: str, paths: list[Path]) -> None:
             text = data.decode("utf-8")
         except UnicodeDecodeError:
             text = None
-        case.evidence.append(Evidence(
-            filename=path.name,
-            kind=classify_file(path.name),
-            size_bytes=len(data),
-            text=text,
-            stored_path=str(path),
-        ))
+        case.evidence.append(
+            Evidence(
+                filename=path.name,
+                kind=classify_file(path.name),
+                size_bytes=len(data),
+                text=text,
+                stored_path=str(path),
+            )
+        )
     report = await BenchMindOrchestrator(provider, settings.max_parallel_agents).analyze(case)
     print(json.dumps(report.model_dump(mode="json"), indent=2))
 
