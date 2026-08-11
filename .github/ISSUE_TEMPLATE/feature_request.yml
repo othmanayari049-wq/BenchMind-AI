@@ -1,0 +1,24 @@
+name: Engineering feature
+description: Propose an agent, tool, platform, or diagnostic capability
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Engineering use case
+      description: Describe the real debugging problem this solves.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Required evidence
+      description: What files, measurements, or tool outputs should the feature consume?
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: How should it be verified?
+      description: Describe a deterministic test or benchmark case where possible.
