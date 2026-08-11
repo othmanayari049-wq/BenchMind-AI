@@ -1,0 +1,32 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# BenchMind runtime data
+.benchmind/
+
+# Node / Next
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
