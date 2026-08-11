@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Annotated
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -88,8 +89,8 @@ async def capabilities() -> dict[str, object]:
 
 @app.post("/api/v1/analyze", response_model=EngineeringReport)
 async def analyze(
-    question: str = Form(..., min_length=3, max_length=4000),
-    files: list[UploadFile] | None = File(default=None),
+    question: Annotated[str, Form(min_length=3, max_length=4000)],
+    files: Annotated[list[UploadFile] | None, File()] = None,
 ) -> EngineeringReport:
     uploads = files or []
     if len(uploads) > settings.max_files_per_case:
